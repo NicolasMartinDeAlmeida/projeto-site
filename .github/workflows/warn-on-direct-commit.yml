@@ -1,0 +1,36 @@
+name: Warn on Direct Commit to Main
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  check-direct-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check for direct commit
+        run: |
+          # Get the commit that triggered this push
+          COMMIT_SHA="${{ github.sha }}"
+          COMMIT_MSG=$(git log -1 --pretty=%B $COMMIT_SHA)
+          PUSHER="${{ github.actor }}"
+          
+          # Check if this is a merge commit (indicates PR merge)
+          PARENT_COUNT=$(git rev-list --parents -n 1 $COMMIT_SHA | wc -w)
+          
+          # If it has 2+ parents, it's a merge commit (from a PR)
+          if [ "$PARENT_COUNT" -lt 3 ]; then
+            # Direct commit detected (not a merge)
+            echo "::warning::⚠️ Direct commit detected on main branch!"
+            echo "::warning::Please use Pull Requests for all changes:"
+            echo "::warning::1. Create a feature branch"
+            echo "::warning::2. Make your changes"
+            echo "::warning::3. Open a Pull Request for review"
+            echo "::warning::4. Merge via GitHub after approval"
+            exit 0
+          fi
