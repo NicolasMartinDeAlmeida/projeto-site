@@ -26,11 +26,11 @@ jobs:
           # If it has 2+ parents, it's a merge commit (from a PR)
           if [ "$PARENT_COUNT" -lt 3 ]; then
             # Direct commit detected (not a merge)
-            echo "::warning::⚠️ Direct commit detected on main branch!"
-            echo "::warning::Please use Pull Requests for all changes:"
-            echo "::warning::1. Create a feature branch"
-            echo "::warning::2. Make your changes"
-            echo "::warning::3. Open a Pull Request for review"
-            echo "::warning::4. Merge via GitHub after approval"
-            exit 0
+            echo "::error::❌ Direct commit detected on main branch!"
+            echo "::error::Please use Pull Requests for all changes:"
+            echo "::error::1. Create a feature branch"
+            echo "::error::2. Make your changes"
+            echo "::error::3. Open a Pull Request for review"
+            echo "::error::4. Merge via GitHub after approval"
+            exit 1
           fi
